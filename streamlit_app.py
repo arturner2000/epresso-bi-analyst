@@ -22,7 +22,7 @@ st.markdown("<style>[data-testid='stMetricValue']{font-size:clamp(1.15rem,2.3vw,
             unsafe_allow_html=True)
 
 QUESTION_LIMIT = 15
-DEFAULT_MODELS = ["gemini-2.5-flash", "gemini-flash-latest", "gemini-2.0-flash"]
+DEFAULT_MODELS = ["gemini-2.5-flash", "gemini-flash-latest", "gemini-2.5-flash-lite", "gemini-flash-lite-latest", "gemini-2.0-flash"]
 MONTHS = A.MONTHS
 LINE_COLORS = {"All channels": "#888888", "Website": "#2E6F9E", "Brick & Mortar": "#C8792B", "Unknown store": "#999999"}
 CH_COLORS = alt.Scale(domain=["Website", "Brick & Mortar", "Unknown store"], range=["#2E6F9E", "#C8792B", "#999999"])
