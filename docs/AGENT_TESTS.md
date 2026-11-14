@@ -28,6 +28,7 @@ Independent verification uses `validation/independent_check.py` (separate code) 
 | D | Asked "How did Orlando do?" | Answered "Unsupported", although Orlando is a store | No rule handled a store name on its own | Added the store-performance rule. Because there are two Orlando stores, the assistant now asks for the store ID instead of guessing. Asking for "SH08" returns that store's yearly revenue. |
 | E | Asked "What's the weather in Denver?" after fix D | Returned Denver store revenue | Fix D was too broad | That rule now requires performance words. Retest: correctly "Unsupported" with a list of capabilities. |
 | F | Reviewed answer text | Negative money showed as "$-360,610" | Formatting | Now shows "−$360,610". |
+| G | First live Gemini run (14 Nov 2026) | Gemini returned HTTP 503 "high demand"; the app went straight to rules-based mode (safe and clearly labelled, but no AI answer) — [screenshot](g_fallback_503.jpg) | 503/429 errors and timeouts were treated as final; the backup models were never tried | A busy model is now retried once, then the next model is tried (`gemini-2.5-flash` → `gemini-flash-latest` → `gemini-2.5-flash-lite` → `gemini-flash-lite-latest` → `gemini-2.0-flash`), with a 75 s total budget before the rules fallback. New tests: `test_busy_model_is_retried_then_next_model_used` and the all-busy and timeout fallbacks. Retest: all five tests answered by Gemini (see below). |
 
 ## Controls verified
 
@@ -36,3 +37,18 @@ Independent verification uses `validation/independent_check.py` (separate code) 
 * **Number checker** (`unverified_numbers`). In a simulated Gemini reply, an invented "$9,999" is flagged; every number in the rules-based answers matches a tool result. Covered by `test_gemini_loop_uses_only_named_tools`.
 * **API failure.** A simulated quota error switches to rules-based mode with a visible notice (`test_gemini_failure_falls_back_to_rules`).
 * **Session limit.** After 15 questions the chat box is disabled and an explanation is shown.
+
+## Live Gemini run (14 Nov 2026, after fix G)
+
+`GEMINI_API_KEY` was set in Streamlit Secrets, and the assistant banner shows **"Language-model agent (Gemini function calling)"** ([screenshot](g0_gemini_mode.jpg)).
+`gemini-2.5-flash` was overloaded, so the fallback chain answered with **`gemini-flash-lite-latest`**. The answer header names the model that was used.
+
+| Test | Function Gemini chose (args) | Gemini's answer | Matches rules-based baseline / expected? | Screenshot |
+|---|---|---|---|---|
+| 1. Website revenue 2028 | `get_revenue_summary` `{"channel":"Website","year":2028}` | $6,339,640 from 240 rows | ✅ Same number | [g1](g1_website_2028.jpg) |
+| 2. Greatest % decline | `get_store_trend` `{}` | Chicago (SH11), −66.81% ($539,740 → $179,130) | ✅ Same store and figures | [g2](g2_store_decline.jpg) |
+| 3. Most profitable store | `get_data_coverage` `{}` | Refused to name a store. Explained that the data has no costs, rent, staffing or margins, and listed the data needed | ✅ Correct refusal. Gemini made 1 call; the rules router makes 2 (it also shows revenue trends) | [g3](g3_most_profitable.jpg) |
+| 4. Satisfaction → revenue? | `get_satisfaction_vs_revenue` `{}` | r = 0.235; "Correlation is not causation"; no control for market size or store type; lost customers aren't surveyed | ✅ Same r and caveats. **Finding:** it labelled the tool's `pearson_r_interest_revenue` (0.125) as "interest satisfaction correlation". The number is real and traceable, but the wording is muddled, and it listed every store's figures (verbose) | [g4](g4_satisfaction.jpg) |
+| 5. Chicago 2029, before/after the $1,000 upload | `get_revenue_summary` `{"year":2029,"store":"Chicago (SH11)"}` | Before **$179,130** (header "original course data"); after **$180,130** (header "total $42,175,440 · UPLOADED data") | ✅ Updated without code changes | [before](g5_before_chicago.jpg) / [after](g5_after_chicago.jpg) |
+
+**Comparison with the rules-based mode.** Both modes produced identical numbers because both call the same tested functions; Gemini only changes which function is chosen and how the answer is worded. Gemini handled the questions without keyword matching and wrote more natural interpretations, but was slower (≈15–40 s per answer on the free tier during high demand vs. instant) and occasionally verbose or loosely worded (Test 4). The number checker, tool-call log and rules fallback mean a wrong or unavailable model cannot silently change a figure.
