@@ -403,6 +403,8 @@ def _gemini_tools(model) -> list:
 
 
 RETRY_WAIT_SECONDS = 2
+REQUEST_TIMEOUT_SECONDS = 25
+TOTAL_LLM_BUDGET_SECONDS = 75  # after this, stop trying models and answer with the rules-based assistant
 
 
 class LLMUnavailable(RuntimeError):
@@ -410,14 +412,20 @@ class LLMUnavailable(RuntimeError):
 
 
 class ModelBusy(LLMUnavailable):
-    """Temporary overload / rate limit (HTTP 429, 500, 503): worth a retry or a different model."""
+    """Temporary overload, rate limit or timeout: worth a retry (if `retry`) or a different model."""
+
+    def __init__(self, msg, retry=True):
+        super().__init__(msg)
+        self.retry = retry
 
 
-def _post(url, payload, api_key, timeout=40):
+def _post(url, payload, api_key, timeout=REQUEST_TIMEOUT_SECONDS):
     import requests  # imported lazily so tests run without network packages
     try:
         r = requests.post(url, json=payload, timeout=timeout,
                           headers={"x-goog-api-key": api_key, "Content-Type": "application/json"})
+    except requests.Timeout as e:  # slow / overloaded model: don't wait on it again, try the next one
+        raise ModelBusy(f"The Gemini model did not answer within {timeout} s.", retry=False) from e
     except requests.RequestException as e:
         raise LLMUnavailable(f"Could not reach the Gemini API ({type(e).__name__}).") from e
     if r.status_code == 429:
@@ -448,11 +456,14 @@ def answer_gemini(q, model, api_key, model_names, sidebar_filters, use_sidebar) 
         "generationConfig": {"temperature": 0},
     }
     last_err = None
-    attempts = [(m, n) for m in model_names for n in range(2)]  # each model: one try + one retry if busy
+    deadline = time.monotonic() + TOTAL_LLM_BUDGET_SECONDS
+    attempts = [(m, n) for m in dict.fromkeys(model_names) for n in range(2)]  # one try + one retry if busy
     for mname, attempt in attempts:
         url = f"https://generativelanguage.googleapis.com/v1beta/models/{mname}:generateContent"
-        if attempt and not isinstance(last_err, ModelBusy):
-            continue  # only retry a model that was busy
+        if attempt and not (isinstance(last_err, ModelBusy) and last_err.retry):
+            continue  # only retry a model that answered "busy"
+        if time.monotonic() > deadline:
+            break
         if attempt:
             time.sleep(RETRY_WAIT_SECONDS)
         turn.calls.clear()  # a failed attempt's tool calls are not part of the final answer
