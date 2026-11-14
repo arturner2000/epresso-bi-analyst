@@ -3,10 +3,10 @@
 **Reference ("Power BI result") column:** figures from the course Power BI walkthrough
 (*Using Power BI – Assignment Walkthrough*), which were produced by Power BI from the same three files.
 
-**Our own BI report:** for the earlier BI assignment we rebuilt the walkthrough dashboard in **Google Looker Studio**
+**My own BI report:** for the earlier BI assignment I rebuilt the walkthrough dashboard in **Google Looker Studio**
 from the same three files (Sales flattened from the .accdb, Survey summed to store-year). Its figures agree with the
 walkthrough and with the app: total $42,174,440, Website $27,218,880, Brick & Mortar $14,955,560. So the reference
-column is confirmed by two separate BI tools (Power BI in the walkthrough, Looker Studio in ours).
+column is confirmed by two separate BI tools (Power BI in the walkthrough, Looker Studio in mine).
 
 **App result:** the deployed app on the original data (Overview, Trends and Stores tabs; same numbers from
 `epresso/analytics.py`).
