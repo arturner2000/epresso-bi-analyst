@@ -4,7 +4,7 @@ A hosted Streamlit business-intelligence app for the fictional E-Presso coffee-e
 an interactive revenue dashboard, data-quality checks, and an analytical assistant that answers business
 questions **only** by calling tested Python functions on the currently loaded data.
 
-**Live app:** `<paste your Streamlit URL here>` · **Course:** Applied Data Science, AI Business Intelligence Challenge
+**Live app:** https://arturner2000-epresso-bi-analyst-streamlit-app-mlxnbs.streamlit.app/ · **Course:** Applied Data Science, AI Business Intelligence Challenge
 
 ---
 
