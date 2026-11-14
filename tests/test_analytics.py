@@ -167,6 +167,36 @@ def test_gemini_failure_falls_back_to_rules(monkeypatch):
     assert turn.calls and turn.calls[0]["result"]["value"]["total_revenue"] == 1100
 
 
+def test_busy_model_is_retried_then_next_model_used(monkeypatch):
+    """HTTP 503 'high demand' (seen on the live app): retry once, then move to the next model."""
+    from epresso import agent as G
+    m = build_model(tiny_tables(), {})
+    monkeypatch.setattr(G, "RETRY_WAIT_SECONDS", 0)
+    seen = []
+
+    def fake_post(url, payload, key, timeout=40):
+        seen.append(url.split("/models/")[1].split(":")[0])
+        if "busy-model" in url:
+            raise G.ModelBusy("Gemini API error 503: the model is temporarily overloaded.")
+        return {"candidates": [{"content": {"role": "model", "parts": [{"text": "Revenue was $1,100."}]}}]}
+    monkeypatch.setattr(G, "_post", fake_post)
+    turn = G.ask("revenue?", m, api_key="k", model_names=["busy-model", "ok-model"], sidebar_filters={}, use_sidebar=False)
+    assert seen == ["busy-model", "busy-model", "ok-model"]
+    assert turn.mode == "Gemini (LLM: ok-model)"
+
+
+def test_all_models_busy_falls_back_with_notice(monkeypatch):
+    from epresso import agent as G
+    m = build_model(tiny_tables(), {})
+    monkeypatch.setattr(G, "RETRY_WAIT_SECONDS", 0)
+
+    def busy(*a, **k):
+        raise G.ModelBusy("Gemini API error 503: the model is temporarily overloaded.")
+    monkeypatch.setattr(G, "_post", busy)
+    turn = G.ask("How much revenue in 2026?", m, api_key="k", model_names=["a", "b"], sidebar_filters={}, use_sidebar=False)
+    assert turn.mode == "Rules-based" and "overloaded" in turn.notice and "tried a, b" in turn.notice
+
+
 def test_router_regressions():
     """Defects found during agent testing (see docs/AGENT_TESTS.md) stay fixed."""
     from epresso import agent as G
