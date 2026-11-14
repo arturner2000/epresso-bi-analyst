@@ -20,6 +20,7 @@ st.set_page_config(page_title="E-Presso BI Analyst", page_icon="☕", layout="wi
 QUESTION_LIMIT = 15
 DEFAULT_MODELS = ["gemini-2.5-flash", "gemini-flash-latest", "gemini-2.0-flash"]
 MONTHS = A.MONTHS
+LINE_COLORS = {"All channels": "#888888", "Website": "#2E6F9E", "Brick & Mortar": "#C8792B", "Unknown store": "#999999"}
 CH_COLORS = alt.Scale(domain=["Website", "Brick & Mortar", "Unknown store"], range=["#2E6F9E", "#C8792B", "#999999"])
 
 
@@ -137,8 +138,8 @@ with tabs[0]:
             ydf["Year"] = ydf["Year"].astype(int).astype(str)
             line = alt.Chart(ydf).mark_line(point=True).encode(
                 x=alt.X("Year:O", title="Year"), y=alt.Y("Revenue:Q", title="Revenue (US$)", axis=alt.Axis(format="$,.2s")),
-                color=alt.Color("Channel:N", scale=alt.Scale(domain=["All channels", "Website", "Brick & Mortar", "Unknown store"],
-                                                             range=["#444444", "#2E6F9E", "#C8792B", "#999999"]), title=None),
+                color=alt.Color("Channel:N", scale=alt.Scale(domain=[c for c in LINE_COLORS if c in set(ydf["Channel"])],
+                                                             range=[LINE_COLORS[c] for c in LINE_COLORS if c in set(ydf["Channel"])]), title=None),
                 tooltip=["Year", "Channel", alt.Tooltip("Revenue:Q", format="$,.0f")])
             st.altair_chart(line.properties(height=260), width="stretch")
     st.markdown("**Revenue by year (table)**")
