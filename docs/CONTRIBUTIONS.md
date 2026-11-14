@@ -1,14 +1,16 @@
-# Team contribution statement (fill in)
+# Contribution statement
 
-The Project Guide requires **commits from every team member**. Each of you should make real commits:
-deploying, editing the README or docs, running the tests and recording the results, adding screenshots.
+**This is an individual project.** Alessandro (Rhett) Turner completed it alone, with no teammate, so every commit
+in this repository is his.
 
-| Team member | Main responsibilities | Key calculation or design decision I can explain | Approximate commits |
-|---|---|---|---|
-| *Name 1* | e.g. data loading and validation, $1,000 test, deployment | e.g. why Sales joins directly to Stores, and the before/after merge checks | |
-| *Name 2* | e.g. assistant testing, Gemini setup, reflection | e.g. how the dispatcher limits the model to named functions, and why profit questions are refused | |
+| Who | Contribution |
+|---|---|
+| **Rhett Turner** (sole author) | Planned the approach. Collected the three course files from Canvas. Built the Looker Studio version of the Power BI assignment, which supplies the reference values. Created the GitHub repo and deployed the app on Streamlit Community Cloud. Configured secrets. Reviewed every calculation against the walkthrough and Looker. Ran the live $1,000 test and the assistant tests. Wrote the reflection. All commits. |
+| **Claude (Anthropic), AI assistant** | Wrote most of the code: the Access reader, analytics functions, Streamlit app and tests. Drafted the validation and test documents. Found and fixed bugs during testing. Every AI-generated output was checked against independent results (see `VALIDATION.md`). |
 
-## Defense prep: questions each of you should be able to answer
+AI use is also disclosed in the README and the reflection.
+
+## Defense prep: questions I should be able to answer
 
 1. What is the grain of Sales and Survey? Why is Sales summed to store-year before it's compared with satisfaction?
 2. How do you know the joins didn't duplicate revenue? (Merge log: 25,200 rows and $42,174,440, before and after.)
