@@ -98,4 +98,4 @@ For the language-model assistant add a secret in *App settings → Secrets*:
 ## AI use
 
 Built with Claude (Anthropic) as the development partner: data investigation, the Access reader, analytics,
-app, tests and documentation drafts. The team reviewed and tested every calculation (see `docs/`).
+app, tests and documentation drafts. The author reviewed and tested every calculation (see `docs/`). This is an individual project.
