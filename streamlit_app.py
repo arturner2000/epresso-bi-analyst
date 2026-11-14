@@ -16,6 +16,10 @@ from epresso import analytics as A
 from epresso.data_loader import GRAIN, DataError, load
 
 st.set_page_config(page_title="E-Presso BI Analyst", page_icon="☕", layout="wide")
+# KPI values: shrink with the window instead of being cut off with "..."
+st.markdown("<style>[data-testid='stMetricValue']{font-size:clamp(1.15rem,2.3vw,2.25rem);}"
+            "[data-testid='stMetricValue'] > div{overflow:visible;text-overflow:clip;}</style>",
+            unsafe_allow_html=True)
 
 QUESTION_LIMIT = 15
 DEFAULT_MODELS = ["gemini-2.5-flash", "gemini-flash-latest", "gemini-2.0-flash"]
