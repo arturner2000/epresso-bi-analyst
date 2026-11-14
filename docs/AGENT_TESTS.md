@@ -4,8 +4,9 @@
 The rules-based router answers whenever no API key is set, or when the API fails or the quota runs out.
 The results below were recorded in **rules-based mode** on the original data, unless a row says otherwise.
 
-➜ *Team: once `GEMINI_API_KEY` is set in Streamlit Secrets, ask the same five questions on the live app. Add
-the Gemini answer and a screenshot of each tool-call log, and keep the rules-based results as the baseline.*
+**Live-app evidence (14 Nov 2026, rules-based mode, original data unless noted).** Each screenshot shows the answer and its expanded tool-call log:
+[Test 1](screenshots/t1_website_2028.jpg) · [Test 2](screenshots/t2_store_decline.jpg) · [Test 3](screenshots/t3_most_profitable.jpg) · [Test 4](screenshots/t4_satisfaction.jpg) · Test 5 [before](screenshots/t5_before_assistant.jpg) / [after](screenshots/t5_after_sidebar_assistant.jpg).
+All five gave the expected result on the deployed app. If a `GEMINI_API_KEY` is added later, the same questions can be rerun in Gemini mode and compared with this baseline.
 
 Independent verification uses `validation/independent_check.py` (separate code) and the Power BI walkthrough.
 

@@ -74,5 +74,14 @@ original. The modified file is saved as `validation/modified_data/Support_EX_B_S
 | Assistant before/after | "How much revenue did Chicago generate in 2029?" → before **$179,130**, after **$180,130** (tool `get_revenue_summary`, args `{"year":[2029],"store":"Chicago"}`). |
 | Original data restored? | Yes - removing the upload returns the app to the bundled original ($42,174,440). The original file was never modified. |
 
-➜ *Team: repeat this on the live app and attach screenshots (sidebar source line, KPI row, the 2029 point,
-the assistant answer + tool log, before and after).*
+### Live-app evidence (deployed app, 14 Nov 2026)
+
+The test was repeated on the hosted app by uploading `validation/modified_data/Support_EX_B_Sales.accdb` in the sidebar, with no code changes or restart.
+
+| Step | Observed on the live app | Screenshot |
+|---|---|---|
+| Before (original data) | Assistant: Chicago 2029 = **$179,130**, header "original course data" | [t5_before_assistant.jpg](screenshots/t5_before_assistant.jpg) |
+| After upload: KPIs | Total **$42,175,440**, Brick & Mortar **$14,956,560**, Website unchanged $27,218,880. Banner: "Using uploaded data … Sales ← Support_EX_B_Sales.accdb" | [t5_after_overview.jpg](screenshots/t5_after_overview.jpg) |
+| After upload: Stores chart | Chicago 2025→2029 change **−66.6%** (was −66.8%) | [t5_after_stores.jpg](screenshots/t5_after_stores.jpg) |
+| After upload: assistant + sidebar | Chicago 2029 = **$180,130**; tool `get_revenue_summary` `{"year":[2029],"store":"Chicago"}`; sidebar lists the uploaded file | [t5_after_sidebar_assistant.jpg](screenshots/t5_after_sidebar_assistant.jpg) |
+| Restored | Upload removed → total back to **$42,174,440** | [t5_restored_overview.jpg](screenshots/t5_restored_overview.jpg) |
