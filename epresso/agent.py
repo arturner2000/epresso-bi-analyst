@@ -402,8 +402,15 @@ def _gemini_tools(model) -> list:
     return [{"functionDeclarations": decls}]
 
 
+RETRY_WAIT_SECONDS = 2
+
+
 class LLMUnavailable(RuntimeError):
     pass
+
+
+class ModelBusy(LLMUnavailable):
+    """Temporary overload / rate limit (HTTP 429, 500, 503): worth a retry or a different model."""
 
 
 def _post(url, payload, api_key, timeout=40):
@@ -414,7 +421,9 @@ def _post(url, payload, api_key, timeout=40):
     except requests.RequestException as e:
         raise LLMUnavailable(f"Could not reach the Gemini API ({type(e).__name__}).") from e
     if r.status_code == 429:
-        raise LLMUnavailable("The Gemini free-tier quota or rate limit has been reached.")
+        raise ModelBusy("The Gemini free-tier quota or rate limit has been reached.")
+    if r.status_code in (500, 503):
+        raise ModelBusy(f"Gemini API error {r.status_code}: the model is temporarily overloaded.")
     if r.status_code == 404:
         raise FileNotFoundError(r.text[:200])
     if r.status_code >= 400:
@@ -439,8 +448,14 @@ def answer_gemini(q, model, api_key, model_names, sidebar_filters, use_sidebar) 
         "generationConfig": {"temperature": 0},
     }
     last_err = None
-    for mname in model_names:
+    attempts = [(m, n) for m in model_names for n in range(2)]  # each model: one try + one retry if busy
+    for mname, attempt in attempts:
         url = f"https://generativelanguage.googleapis.com/v1beta/models/{mname}:generateContent"
+        if attempt and not isinstance(last_err, ModelBusy):
+            continue  # only retry a model that was busy
+        if attempt:
+            time.sleep(RETRY_WAIT_SECONDS)
+        turn.calls.clear()  # a failed attempt's tool calls are not part of the final answer
         try:
             contents = list(payload["contents"])
             for _ in range(MAX_TOOL_CALLS):
@@ -466,6 +481,11 @@ def answer_gemini(q, model, api_key, model_names, sidebar_filters, use_sidebar) 
         except FileNotFoundError as e:  # model name not available for this key: try the next one
             last_err = e
             continue
+        except ModelBusy as e:  # overloaded or rate-limited: retry once, then try the next model
+            last_err = e
+            continue
+    if isinstance(last_err, ModelBusy):
+        raise LLMUnavailable(f"{last_err} (tried {', '.join(dict.fromkeys(model_names))}).")
     raise LLMUnavailable(f"No configured Gemini model is available ({last_err}).")
 
 
