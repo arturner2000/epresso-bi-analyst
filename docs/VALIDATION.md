@@ -80,8 +80,8 @@ The test was repeated on the hosted app by uploading `validation/modified_data/S
 
 | Step | Observed on the live app | Screenshot |
 |---|---|---|
-| Before (original data) | Assistant: Chicago 2029 = **$179,130**, header "original course data" | [t5_before_assistant.jpg](screenshots/t5_before_assistant.jpg) |
-| After upload: KPIs | Total **$42,175,440**, Brick & Mortar **$14,956,560**, Website unchanged $27,218,880. Banner: "Using uploaded data … Sales ← Support_EX_B_Sales.accdb" | [t5_after_overview.jpg](screenshots/t5_after_overview.jpg) |
-| After upload: Stores chart | Chicago 2025→2029 change **−66.6%** (was −66.8%) | [t5_after_stores.jpg](screenshots/t5_after_stores.jpg) |
-| After upload: assistant + sidebar | Chicago 2029 = **$180,130**; tool `get_revenue_summary` `{"year":[2029],"store":"Chicago"}`; sidebar lists the uploaded file | [t5_after_sidebar_assistant.jpg](screenshots/t5_after_sidebar_assistant.jpg) |
-| Restored | Upload removed → total back to **$42,174,440** | [t5_restored_overview.jpg](screenshots/t5_restored_overview.jpg) |
+| Before (original data) | Assistant: Chicago 2029 = **$179,130**, header "original course data" | [t5_before_assistant.jpg](t5_before_assistant.jpg) |
+| After upload: KPIs | Total **$42,175,440**, Brick & Mortar **$14,956,560**, Website unchanged $27,218,880. Banner: "Using uploaded data … Sales ← Support_EX_B_Sales.accdb" | [t5_after_overview.jpg](t5_after_overview.jpg) |
+| After upload: Stores chart | Chicago 2025→2029 change **−66.6%** (was −66.8%) | [t5_after_stores.jpg](t5_after_stores.jpg) |
+| After upload: assistant + sidebar | Chicago 2029 = **$180,130**; tool `get_revenue_summary` `{"year":[2029],"store":"Chicago"}`; sidebar lists the uploaded file | [t5_after_sidebar_assistant.jpg](t5_after_sidebar_assistant.jpg) |
+| Restored | Upload removed → total back to **$42,174,440** | [t5_restored_overview.jpg](t5_restored_overview.jpg) |
