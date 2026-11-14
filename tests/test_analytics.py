@@ -148,7 +148,7 @@ def test_gemini_loop_uses_only_named_tools(monkeypatch):
         {"candidates": [{"content": {"role": "model", "parts": [
             {"text": "Scope: 2026, Website.\n**Findings** Revenue was $600 and $9,999."}]}}]},
     ])
-    monkeypatch.setattr(G, "_post", lambda url, payload, key, timeout=40: next(replies))
+    monkeypatch.setattr(G, "_post", lambda url, payload, key, timeout=25: next(replies))
     turn = G.ask("website 2026?", m, api_key="test", model_names=["fake"], sidebar_filters={}, use_sidebar=False)
     assert turn.calls[0]["tool"] == "get_revenue_summary"
     assert turn.calls[0]["result"]["value"]["total_revenue"] == 600
@@ -174,7 +174,7 @@ def test_busy_model_is_retried_then_next_model_used(monkeypatch):
     monkeypatch.setattr(G, "RETRY_WAIT_SECONDS", 0)
     seen = []
 
-    def fake_post(url, payload, key, timeout=40):
+    def fake_post(url, payload, key, timeout=25):
         seen.append(url.split("/models/")[1].split(":")[0])
         if "busy-model" in url:
             raise G.ModelBusy("Gemini API error 503: the model is temporarily overloaded.")
@@ -195,6 +195,22 @@ def test_all_models_busy_falls_back_with_notice(monkeypatch):
     monkeypatch.setattr(G, "_post", busy)
     turn = G.ask("How much revenue in 2026?", m, api_key="k", model_names=["a", "b"], sidebar_filters={}, use_sidebar=False)
     assert turn.mode == "Rules-based" and "overloaded" in turn.notice and "tried a, b" in turn.notice
+
+
+def test_timeout_moves_to_next_model_without_retry(monkeypatch):
+    from epresso import agent as G
+    m = build_model(tiny_tables(), {})
+    monkeypatch.setattr(G, "RETRY_WAIT_SECONDS", 0)
+    seen = []
+
+    def fake_post(url, payload, key, timeout=25):
+        seen.append(url.split("/models/")[1].split(":")[0])
+        if "slow" in url:
+            raise G.ModelBusy("did not answer in time", retry=False)
+        return {"candidates": [{"content": {"role": "model", "parts": [{"text": "Revenue was $1,100."}]}}]}
+    monkeypatch.setattr(G, "_post", fake_post)
+    turn = G.ask("revenue?", m, api_key="k", model_names=["slow", "fast"], sidebar_filters={}, use_sidebar=False)
+    assert seen == ["slow", "fast"] and turn.mode == "Gemini (LLM: fast)"
 
 
 def test_router_regressions():
