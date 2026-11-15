@@ -1,12 +1,12 @@
 # Contribution statement
 
-**This is an individual project.** Alessandro (Rhett) Turner completed it alone, with no teammate, so every commit
-in this repository is his.
+**This is an individual project.** Alessandro (Rhett) Turner is the only student on it, and every commit is from
+his account. Most of the hands-on work was done by an AI assistant, as described below.
 
 | Who | Contribution |
 |---|---|
-| **Rhett Turner** (sole author) | Planned the approach. Collected the three course files from Canvas. Built the Looker Studio version of the Power BI assignment, which supplies the reference values. Created the GitHub repo and deployed the app on Streamlit Community Cloud. Configured secrets. Reviewed every calculation against the walkthrough and Looker. Ran the live $1,000 test and the assistant tests. Wrote the reflection. All commits. |
-| **Claude (Anthropic), AI assistant** | Wrote most of the code: the Access reader, analytics functions, Streamlit app and tests. Drafted the validation and test documents. Found and fixed bugs during testing. Every AI-generated output was checked against independent results (see `VALIDATION.md`). |
+| **Rhett Turner** (sole student) | Chose the approach: the Power BI assignment first, rebuilt in Looker Studio, then the app. Made the scope decisions: kept a friend's report untouched, worked solo. Created the Google, GitHub, Streamlit and Gemini accounts, accepted their terms and set the Gemini key. Uploaded files to GitHub. Directed the work against the rubric and reviewed the results. Caught that an earlier draft of the reflection overstated his role. |
+| **Claude (Anthropic), AI assistant** | Did most of the hands-on work. Read the data. Wrote all the code: Access reader, analytics, Streamlit app, assistant, tests. Built the Looker Studio report in the browser. Deployed and fixed the app. Ran the validation, the $1,000 test and the agent tests on the live app. Drafted all the documentation, including the reflection. |
 
 AI use is also disclosed in the README and the reflection.
 
