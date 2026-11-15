@@ -38,6 +38,17 @@ Independent verification uses `validation/independent_check.py` (separate code) 
 * **API failure.** A simulated quota error switches to rules-based mode with a visible notice (`test_gemini_failure_falls_back_to_rules`).
 * **Session limit.** After 15 questions the chat box is disabled and an explanation is shown.
 
+## Evidence that answers come from the app's calculations
+
+[g6_raw_tool_result.jpg](g6_raw_tool_result.jpg) shows a Gemini answer, "Chicago in 2029 was **$179,130**", with its
+tool-call log fully expanded. The raw result from `get_revenue_summary` reads `"total_revenue": 179130`,
+`"rows_used": 240` and scope `{"year":[2029], "store":"Chicago (SH11)"}`, so the number in the answer is the
+number the function returned. Further evidence:
+
+* **Independent agreement.** Every tested figure matches `validation/independent_check.py`, which shares no code with the app, and the Power BI walkthrough.
+* **Data-sensitivity.** After the $1,000 upload, the same question returned $180,130. A fabricated answer could not track a one-row change.
+* **Controls.** The model can only call the 10 named functions; it has no code execution or raw data. A number checker flags any figure that isn't in a tool result (tested with an invented "$9,999").
+
 ## Live Gemini run (14 Nov 2026, after fix G)
 
 `GEMINI_API_KEY` was set in Streamlit Secrets, and the assistant banner shows **"Language-model agent (Gemini function calling)"** ([screenshot](g0_gemini_mode.jpg)).
