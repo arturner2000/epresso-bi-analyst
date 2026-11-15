@@ -95,6 +95,25 @@ For the language-model assistant add a secret in *App settings → Secrets*:
   list of what it can answer.
 * Year-over-year growth compares calendar-year totals; it does not adjust for seasonality inside a year.
 
+## Development process
+
+**Why the history starts with one large commit.** Phases 1–4 below were built and tested in a local workspace,
+then uploaded in a single commit ([ac6f2e2](https://github.com/arturner2000/epresso-bi-analyst/commit/ac6f2e2)). So the bugs found in those phases (A–F) are recorded
+in [`docs/AGENT_TESTS.md`](docs/AGENT_TESTS.md) and as regression tests, not as separate commits. Everything after
+deployment is in the commit history.
+
+| Phase | What was done | Evidence |
+|---|---|---|
+| 1. Data access | No Access driver on Mac/Linux, so I wrote a read-only `.accdb` parser. It was checked against a separate prototype reader (25,200 rows). | `epresso/accdb_reader.py`, `validation/export_accdb_tables.py` |
+| 2. Model and validation | Joins with before/after row and revenue checks. Compared against the Power BI walkthrough and my Looker Studio rebuild. Independent check script. | [`docs/VALIDATION.md`](docs/VALIDATION.md), `validation/independent_check.py` |
+| 3. Dashboard | Tabs, filters, data-quality tab, file upload with recalculation. Fix C: unknown Store ID crash. | `streamlit_app.py`, `test_sales_row_with_unknown_store_does_not_crash` |
+| 4. Assistant | Tool registry, dispatcher, rules router and Gemini loop. Fix A: router dropped the year. Fixes B, D, E, F: category ranking, store-only questions, over-broad rule, money format. | [`docs/AGENT_TESTS.md`](docs/AGENT_TESTS.md), `tests/test_analytics.py` |
+| 5. Deployment | Uploaded to GitHub and deployed on Streamlit Community Cloud. | [ac6f2e2](https://github.com/arturner2000/epresso-bi-analyst/commit/ac6f2e2), [a615ad2](https://github.com/arturner2000/epresso-bi-analyst/commit/a615ad2) |
+| 6. Live fixes | Empty legend entry; KPI numbers cut off on narrow screens. | [ce989f9](https://github.com/arturner2000/epresso-bi-analyst/commit/ce989f9), [8a98a91](https://github.com/arturner2000/epresso-bi-analyst/commit/8a98a91) |
+| 7. Live testing | $1,000 test and the five agent tests on the live app, with screenshots. | [d524f9e](https://github.com/arturner2000/epresso-bi-analyst/commit/d524f9e), `docs/t*.jpg` |
+| 8. Gemini fix (G) | The first live Gemini answer failed with HTTP 503. Added retry, model fall-through and a time budget, with new tests. All five tests were then rerun in Gemini mode. | [adf3b69](https://github.com/arturner2000/epresso-bi-analyst/commit/adf3b69), [8335bc6](https://github.com/arturner2000/epresso-bi-analyst/commit/8335bc6), [0c0dcb7](https://github.com/arturner2000/epresso-bi-analyst/commit/0c0dcb7), [e709b55](https://github.com/arturner2000/epresso-bi-analyst/commit/e709b55), [c70f4dc](https://github.com/arturner2000/epresso-bi-analyst/commit/c70f4dc), [a35bfe4](https://github.com/arturner2000/epresso-bi-analyst/commit/a35bfe4) |
+| 9. Documentation | Looker cross-check, individual-project statement, reflection. | [40cf852](https://github.com/arturner2000/epresso-bi-analyst/commit/40cf852), [c5939e9](https://github.com/arturner2000/epresso-bi-analyst/commit/c5939e9), [03bf284](https://github.com/arturner2000/epresso-bi-analyst/commit/03bf284) |
+
 ## AI use
 
 Built with Claude (Anthropic) as the development partner: data investigation, the Access reader, analytics,
