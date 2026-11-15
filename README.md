@@ -104,8 +104,8 @@ deployment is in the commit history.
 
 | Phase | What was done | Evidence |
 |---|---|---|
-| 1. Data access | No Access driver on Mac/Linux, so I wrote a read-only `.accdb` parser. It was checked against a separate prototype reader (25,200 rows). | `epresso/accdb_reader.py`, `validation/export_accdb_tables.py` |
-| 2. Model and validation | Joins with before/after row and revenue checks. Compared against the Power BI walkthrough and my Looker Studio rebuild. Independent check script. | [`docs/VALIDATION.md`](docs/VALIDATION.md), `validation/independent_check.py` |
+| 1. Data access | No Access driver on Mac/Linux, so a read-only `.accdb` parser was written (by Claude). It was checked against a separate prototype reader (25,200 rows). | `epresso/accdb_reader.py`, `validation/export_accdb_tables.py` |
+| 2. Model and validation | Joins with before/after row and revenue checks. Compared against the Power BI walkthrough and the Looker Studio rebuild. Independent check script. | [`docs/VALIDATION.md`](docs/VALIDATION.md), `validation/independent_check.py` |
 | 3. Dashboard | Tabs, filters, data-quality tab, file upload with recalculation. Fix C: unknown Store ID crash. | `streamlit_app.py`, `test_sales_row_with_unknown_store_does_not_crash` |
 | 4. Assistant | Tool registry, dispatcher, rules router and Gemini loop. Fix A: router dropped the year. Fixes B, D, E, F: category ranking, store-only questions, over-broad rule, money format. | [`docs/AGENT_TESTS.md`](docs/AGENT_TESTS.md), `tests/test_analytics.py` |
 | 5. Deployment | Uploaded to GitHub and deployed on Streamlit Community Cloud. | [ac6f2e2](https://github.com/arturner2000/epresso-bi-analyst/commit/ac6f2e2), [a615ad2](https://github.com/arturner2000/epresso-bi-analyst/commit/a615ad2) |
@@ -117,4 +117,5 @@ deployment is in the commit history.
 ## AI use
 
 Built with Claude (Anthropic) as the development partner: data investigation, the Access reader, analytics,
-app, tests and documentation drafts. The author reviewed and tested every calculation (see `docs/`). This is an individual project.
+app, tests and documentation drafts. Claude also built the Looker Studio reference report, deployed the app and ran the live tests. The student
+directed the work and reviewed the results. This is an individual project; roles are in `docs/CONTRIBUTIONS.md`.
